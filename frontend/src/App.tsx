@@ -1,23 +1,29 @@
-import React, {useState} from 'react';
-//import logo from './logo.svg';
-import './App.css';
-import { Button } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+//import { Button } from "react-bootstrap";
+import { Note } from "./models/note";
 
 function App() {
-  const [clickCount, setClickCount] = useState(0);
+  const [notes, setNotes] = useState<Note[]>([]);
+  
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Hello world this is Shayan!!
-        </p>
-        <Button onClick={() => setClickCount(clickCount + 1)}>
-          Clicked {clickCount} times
-        </Button>
-      </header>
-    </div>
-  );
+  useEffect(() => {
+    async function loadNotes() {
+      try {
+        const response = await fetch("/api/notes", {
+          method: "GET",
+        }); // Added missing colon after localhost
+        const notes = await response.json();
+        setNotes(notes);
+      } catch (error) {
+        console.error(error);
+        alert(error);
+      }
+    }
+    loadNotes();
+  }, []);
+
+  return <div className="App">{JSON.stringify(notes)}</div>;
 }
 
 export default App;
