@@ -4,18 +4,17 @@ import { Note as NoteModel } from "./models/note";
 import Note from "./components/Note";
 import { Col, Container, Row } from "react-bootstrap";
 import styles from "./styles/NotesPage.module.css";
-
+import * as NotesApi from "./network/notes_api";
+import AddNoteDialogue from "./components/AddNoteDialogue";
 
 function App() {
   const [notes, setNotes] = useState<NoteModel[]>([]);
 
+  const [showAddNoteDialogue, setShowAddNoteDialogue] = useState(false);
   useEffect(() => {
     async function loadNotes() {
       try {
-        const response = await fetch("/api/notes", {
-          method: "GET",
-        }); // Added missing colon after localhost
-        const notes = await response.json();
+        const notes = await NotesApi.fetchNotes();
         setNotes(notes);
       } catch (error) {
         console.error(error);
@@ -34,6 +33,9 @@ function App() {
           </Col>
         ))}
       </Row>
+      { showAddNoteDialogue &&
+          <AddNoteDialogue />
+      }
     </Container>
   );
 }
