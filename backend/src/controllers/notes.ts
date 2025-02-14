@@ -1,12 +1,11 @@
 import { RequestHandler } from "express";
-import Notemodel from "../models/note";
+import NoteModel from "../models/note";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 
 export const getNotes: RequestHandler = async (req, res, next) => {
   try {
-    // throw Error("Bazingal");
-    const notes = await Notemodel.find().exec();
+    const notes = await NoteModel.find().exec();
     res.status(200).json(notes);
   } catch (error) {
     next(error);
@@ -20,7 +19,7 @@ export const getNote: RequestHandler = async (req, res, next) => {
       throw createHttpError(400, "Invalid note Id");
     }
 
-    const note = await Notemodel.findById(noteId).exec();
+    const note = await NoteModel.findById(noteId).exec();
 
     if (!note) {
       throw createHttpError(404, "Note not found");
@@ -51,7 +50,7 @@ export const createNote: RequestHandler<
       throw createHttpError(400, "Note must have a title");
     }
 
-    const newNote = await Notemodel.create({
+    const newNote = await NoteModel.create({
       title: title,
       text: text,
     });
@@ -90,11 +89,12 @@ export const updateNote: RequestHandler<
       throw createHttpError(400, "Note must have a title");
     }
 
-    const note = await Notemodel.findById(noteId).exec();
+    const note = await NoteModel.findById(noteId).exec();
 
     if (!note) {
       throw createHttpError(404, "Note not found");
     }
+
     note.title = newTitle;
     note.text = newText;
 
@@ -114,14 +114,13 @@ export const deleteNote: RequestHandler = async (req, res, next) => {
       throw createHttpError(400, "Invalid note Id");
     }
 
-    const note = await Notemodel.findById(noteId).exec();
+    const note = await NoteModel.findById(noteId).exec();
 
     if (!note) {
       throw createHttpError(404, "Note not found");
     }
 
     await note.deleteOne();
-
 
     res.sendStatus(204);
   } catch (error) {
